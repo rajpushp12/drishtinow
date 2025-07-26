@@ -42,7 +42,7 @@ export function AlertsPanel({ alerts, onNewAlert, TakeActionButton }: AlertsPane
         </ReportForm>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[calc(100vh-28rem)] pr-3">
+        <ScrollArea className="h-[calc(100vh-36rem)] pr-3">
           <div className="space-y-3">
             {sortedAlerts.length > 0 ? (
               sortedAlerts.map(alert => (

@@ -62,6 +62,7 @@ export async function processReportAction(data: Omit<Report, 'id' | 'timestamp' 
             summary: result.alertSummary,
             type: result.alertType as Alert['type'],
             severity: result.alertSeverity as Alert['severity'],
+            priority: result.priority,
             status: 'NEW',
             location: result.alertLocation,
             timestamp: new Date(),

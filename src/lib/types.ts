@@ -21,6 +21,7 @@ export type Alert = {
   timestamp: Date;
   source: "Vertex AI Forecast" | "Gemini Vision" | "Attendee Report";
   assignedResponder?: string | null;
+  priority?: number;
 };
 
 export type Report = {

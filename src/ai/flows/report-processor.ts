@@ -31,6 +31,7 @@ const ReportProcessorOutputSchema = z.object({
   alertSummary: z.string().describe('A summary of the alert.'),
   alertType: z.string().describe('The type of alert (e.g., PREDICTIVE, MEDICAL, FIRE, PANIC, LOST_PERSON).'),
   alertSeverity: z.string().describe('The severity of the alert (e.g., CRITICAL, WARNING, INFO).'),
+  priority: z.number().min(1).max(100).describe('An urgency score from 1 to 100 based on the potential for panic or escalation.'),
   alertLocation: z.object({
     lat: z.number().describe('The latitude of the alert.'),
     lng: z.number().describe('The longitude of the alert.'),
@@ -61,7 +62,8 @@ const reportAnalysisPrompt = ai.definePrompt({
   1.  Whether an alert should be created.
   2.  If so, create a title and summary for the alert.
   3.  Determine the alert type (MEDICAL, LOST_PERSON, SAFETY_CONCERN, or OTHER) and severity (CRITICAL, WARNING, INFO).
-  4. Ensure the location lat/lng for the alert is based on the report's latitude and longitude.
+  4.  Assess the situation and provide a priority score from 1 (low) to 100 (high) based on the description's urgency and potential for panic.
+  5. Ensure the location lat/lng for the alert is based on the report's latitude and longitude.
 
   If the report does not warrant an alert, return null. Otherwise, return the alert details.
 
