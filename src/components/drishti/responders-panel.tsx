@@ -11,7 +11,7 @@ export function RespondersPanel({ responders }: { responders: Responder[] }) {
         <CardTitle>Responder Status</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[calc(100vh-28rem)] pr-3">
+        <ScrollArea className="h-[calc(100vh-18rem)] pr-3">
           <div className="space-y-2">
             {responders.length > 0 ? (
                 responders.map(responder => (

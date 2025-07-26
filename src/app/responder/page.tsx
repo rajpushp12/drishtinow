@@ -3,26 +3,136 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockAlerts, mockResponders } from '@/lib/mock-data';
+import { mockAlerts } from '@/lib/mock-data';
 import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { AlertCard } from '@/components/drishti/alert-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LogOut, CheckCircle, Radio, Coffee, MapPin, NotebookPen } from 'lucide-react';
-import { MapView } from '@/components/drishti/map-view';
+import { LogOut, CheckCircle, Radio, Coffee, MapPin, History, Bell, User } from 'lucide-react';
+import { BottomNav } from '@/components/drishti/bottom-nav';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // In a real app, you'd get the logged-in responder's ID from the session.
 const LOGGED_IN_RESPONDER_ID = 'resp-2'; 
+
+const mockResponders: Responder[] = [
+  { id: 'resp-1', name: 'Alice Johnson', status: 'Available', location: { lat: 34.0522, lng: -118.2437 } },
+  { id: 'resp-2', name: 'Bob Williams', status: 'Dispatched', location: { lat: 34.055, lng: -118.245 }, assignedAlertId: 'alert-2' },
+  { id: 'resp-3', name: 'Charlie Brown', status: 'Available', location: { lat: 34.05, lng: -118.24 } },
+  { id: 'resp-4', name: 'Diana Prince', status: 'On-break', location: { lat: 34.048, lng: -118.25 } },
+];
+
+const ProfilePage = () => {
+    const router = useRouter();
+    const responder = mockResponders.find(r => r.id === LOGGED_IN_RESPONDER_ID)!;
+
+    const handleLogout = () => {
+        localStorage.removeItem('userRole');
+        router.push('/login');
+    };
+
+    const getStatusInfo = (status: Responder['status']) => {
+        const info = {
+            Available: { icon: <CheckCircle className="h-4 w-4 text-green-400" />, text: 'Available', color: 'text-green-400' },
+            Dispatched: { icon: <Radio className="h-4 w-4 text-orange-400" />, text: 'Dispatched', color: 'text-orange-400' },
+            'On-break': { icon: <Coffee className="h-4 w-4 text-gray-400" />, text: 'On Break', color: 'text-gray-400' },
+        }[status];
+        return <div className={`flex items-center gap-2 font-semibold ${info.color}`}>{info.icon} {info.text}</div>;
+    };
+
+    return (
+        <div className="p-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center gap-4">
+                     <Avatar className="h-16 w-16">
+                        <AvatarImage src={`https://placehold.co/64x64.png?text=${responder.name.charAt(0)}`} data-ai-hint="person portrait"/>
+                        <AvatarFallback>{responder.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <CardTitle>{responder.name}</CardTitle>
+                        {getStatusInfo(responder.status)}
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Button onClick={handleLogout} className="w-full">
+                        <LogOut className="mr-2" /> Logout
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+const AlertsPage = ({ assignedAlert }: { assignedAlert: Alert | null }) => (
+    <div className="p-4">
+        <Card className="w-full h-full">
+            <CardHeader>
+                <CardTitle>
+                    {assignedAlert ? 'Your Assigned Task' : 'No Assigned Task'}
+                </CardTitle>
+                <CardDescription>
+                    {assignedAlert ? 'Please proceed to the location and address the situation.' : 'You are currently on standby. Awaiting dispatch.'}
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {assignedAlert ? (
+                    <AlertCard alert={assignedAlert} />
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-16 rounded-lg bg-muted">
+                        <CheckCircle className="w-16 h-16 mb-4 text-green-500" />
+                        <h3 className="text-2xl font-semibold">All Clear</h3>
+                        <p className="mt-2 text-lg">No tasks are currently assigned to you.</p>
+                  </div>
+                )}
+            </CardContent>
+            {assignedAlert && (
+                <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
+                    <Button className="w-full sm:w-auto">
+                        <MapPin className="mr-2"/> Navigate
+                    </Button>
+                    <Button variant="secondary" className="w-full sm:w-auto">
+                        Acknowledge
+                    </Button>
+                     <Button variant="destructive" className="w-full sm:w-auto">
+                        Mark as Resolved
+                    </Button>
+                </CardFooter>
+            )}
+        </Card>
+    </div>
+)
+
+const AlertHistoryPage = () => {
+    const resolvedAlerts = mockAlerts.filter(a => a.status === 'RESOLVED');
+    return (
+        <div className="p-4 space-y-4">
+             <Card>
+                <CardHeader>
+                    <CardTitle>Resolved Alerts</CardTitle>
+                    <CardDescription>History of all resolved alerts.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-[calc(100vh-280px)]">
+                        <div className="space-y-4 pr-4">
+                            {resolvedAlerts.map(alert => <AlertCard key={alert.id} alert={alert} />)}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+        </div>
+    )
+};
+
 
 export default function ResponderDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [responder, setResponder] = useState<Responder | null>(null);
   const [assignedAlert, setAssignedAlert] = useState<Alert | null>(null);
-  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
-
+  const [activeTab, setActiveTab] = useState('alerts');
+  
   useEffect(() => {
     const role = localStorage.getItem('userRole');
     if (role !== 'responder') {
@@ -36,27 +146,14 @@ export default function ResponderDashboard() {
         setAssignedAlert(alert);
       }
       setLoading(false);
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-            setUserLocation({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-            });
-            },
-            () => {
-              // Silently fail if geolocation is denied.
-            }
-        );
-      }
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    router.push('/login');
-  };
+  const navItems = [
+    { id: 'alerts', label: 'Alerts', icon: <Bell /> },
+    { id: 'history', label: 'Alert History', icon: <History /> },
+    { id: 'profile', label: 'Profile', icon: <User /> },
+  ];
   
   const getStatusInfo = (status: Responder['status']) => {
     const info = {
@@ -78,11 +175,11 @@ export default function ResponderDashboard() {
                         <Skeleton className="h-4 w-24" />
                     </div>
                 </div>
-                <Skeleton className="h-10 w-24" />
             </header>
             <main className="flex-1 mt-6">
                 <Skeleton className="h-80 w-full" />
             </main>
+            <Skeleton className="h-16 w-full" />
         </div>
     );
   }
@@ -91,11 +188,21 @@ export default function ResponderDashboard() {
     return <p>Responder not found.</p>
   }
 
-  const alertsForMap = assignedAlert ? [assignedAlert] : [];
-  const respondersForMap = [responder];
+  const renderContent = () => {
+    switch (activeTab) {
+        case 'alerts':
+            return <AlertsPage assignedAlert={assignedAlert} />;
+        case 'history':
+            return <AlertHistoryPage />;
+        case 'profile':
+            return <ProfilePage />;
+        default:
+            return <AlertsPage assignedAlert={assignedAlert} />;
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background">
        <header className="p-4 flex justify-between items-center border-b sticky top-0 bg-background/80 backdrop-blur-sm z-10">
         <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
@@ -107,63 +214,11 @@ export default function ResponderDashboard() {
                 {getStatusInfo(responder.status)}
             </div>
         </div>
-        <Button variant="outline" onClick={handleLogout}>
-          <LogOut className="mr-2" /> Logout
-        </Button>
       </header>
-
-      <main className="flex-1 p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="lg:col-span-1">
-            <Card className="w-full h-full">
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <NotebookPen className="h-6 w-6"/>
-                        <CardTitle>
-                            {assignedAlert ? 'Your Assigned Task' : 'No Assigned Task'}
-                        </CardTitle>
-                    </div>
-                    <CardDescription>
-                        {assignedAlert ? 'Please proceed to the location and address the situation.' : 'You are currently on standby. Awaiting dispatch.'}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {assignedAlert ? (
-                        <AlertCard alert={assignedAlert} />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-16 rounded-lg bg-muted">
-                            <CheckCircle className="w-16 h-16 mb-4 text-green-500" />
-                            <h3 className="text-2xl font-semibold">All Clear</h3>
-                            <p className="mt-2 text-lg">No tasks are currently assigned to you. Stand by for alerts.</p>
-                      </div>
-                    )}
-                </CardContent>
-                {assignedAlert && (
-                    <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
-                        <Button className="w-full sm:w-auto">
-                            <MapPin className="mr-2"/> Navigate
-                        </Button>
-                        <Button variant="secondary" className="w-full sm:w-auto">
-                            Acknowledge
-                        </Button>
-                         <Button variant="destructive" className="w-full sm:w-auto">
-                            Mark as Resolved
-                        </Button>
-                    </CardFooter>
-                )}
-            </Card>
-        </div>
-         <div className="lg:col-span-1 h-[400px] lg:h-auto">
-            <Card className="h-full">
-                <CardHeader>
-                    <CardTitle>Task Location</CardTitle>
-                    <CardDescription>Map view of your assigned task and current location.</CardDescription>
-                </CardHeader>
-                 <CardContent className="h-[calc(100%-80px)] p-0">
-                    <MapView alerts={alertsForMap} responders={respondersForMap} userLocation={userLocation} />
-                </CardContent>
-            </Card>
-        </div>
+      <main className="flex-1 overflow-y-auto pb-20">
+        {renderContent()}
       </main>
+      <BottomNav items={navItems} activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }

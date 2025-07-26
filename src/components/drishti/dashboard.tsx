@@ -6,11 +6,8 @@ import { mockAlerts, mockResponders } from '@/lib/mock-data';
 import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { MapView } from '@/components/drishti/map-view';
 import { AlertsPanel } from '@/components/drishti/alerts-panel';
-import { RespondersPanel } from '@/components/drishti/responders-panel';
 import { SentimentSummary } from '@/components/drishti/sentiment-summary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -19,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
@@ -107,9 +104,9 @@ export function Dashboard() {
   }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <div className="xl:col-span-2">
-        <Card className="h-[400px] lg:h-[calc(100vh-10rem)] shadow-md">
+    <div className="p-4 space-y-4">
+      <div className="h-[300px] lg:h-[calc(100vh-32rem)]">
+        <Card className="h-full shadow-md">
           <CardHeader className='py-4'>
             <CardTitle>Live Event Map</CardTitle>
           </CardHeader>
@@ -119,21 +116,9 @@ export function Dashboard() {
         </Card>
       </div>
       
-      <div className="xl:col-span-1 space-y-4">
+      <div className="space-y-4">
         <SentimentSummary alerts={alerts} />
-        
-        <Tabs defaultValue="alerts" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="alerts"><Bell className="mr-2 h-4 w-4" />Alerts</TabsTrigger>
-            <TabsTrigger value="responders"><Users className="mr-2 h-4 w-4" />Responders</TabsTrigger>
-          </TabsList>
-          <TabsContent value="alerts">
-              <AlertsPanel alerts={alerts} onNewAlert={addAlert} TakeActionButton={TakeActionButton} />
-          </TabsContent>
-          <TabsContent value="responders">
-              <RespondersPanel responders={responders} />
-          </TabsContent>
-        </Tabs>
+        <AlertsPanel alerts={alerts} onNewAlert={addAlert} TakeActionButton={TakeActionButton} />
       </div>
     </div>
   );

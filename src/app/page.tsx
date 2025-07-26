@@ -4,13 +4,49 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dashboard } from '@/components/drishti/dashboard';
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter, SidebarTrigger } from '@/components/ui/sidebar';
-import { Bell, Shield, Map, Users, BotMessageSquare, LogOut } from 'lucide-react';
+import { BottomNav } from '@/components/drishti/bottom-nav';
+import { Bell, Shield, User, LogOut } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { RespondersPanel } from '@/components/drishti/responders-panel';
+import { mockResponders } from '@/lib/mock-data';
+
+const ProfilePage = () => {
+    const router = useRouter();
+    const handleLogout = () => {
+        localStorage.removeItem('userRole');
+        router.push('/login');
+    };
+
+    return (
+        <div className="p-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                        <AvatarImage src="https://placehold.co/64x64.png?text=M" data-ai-hint="person portrait" />
+                        <AvatarFallback>M</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <CardTitle>Management</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Button onClick={handleLogout} className="w-full">
+                        <LogOut className="mr-2" /> Logout
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('alerts');
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -21,98 +57,49 @@ export default function Home() {
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    router.push('/login');
-  };
-  
+  const navItems = [
+    { id: 'alerts', label: 'Alert Management', icon: <Bell /> },
+    { id: 'dispatch', label: 'Dispatch Responders', icon: <Shield /> },
+    { id: 'profile', label: 'Profile', icon: <User /> },
+  ];
+
   if (loading) {
     return (
-      <div className="flex h-screen bg-background">
-        <Skeleton className="hidden md:block md:w-64" />
-        <div className="flex-1 flex flex-col">
-            <header className="p-4 border-b">
-                <Skeleton className="h-6 w-48" />
-            </header>
-            <main className="flex-1 p-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div className="lg:col-span-2 space-y-4">
-                        <Skeleton className="h-[550px] w-full" />
-                    </div>
-                    <div className="lg:col-span-1 space-y-4">
-                        <Skeleton className="h-[150px] w-full" />
-                        <Skeleton className="h-[500px] w-full" />
-                    </div>
-                </div>
-            </main>
+      <div className="flex flex-col h-screen bg-background">
+        <div className="flex-1 p-4 space-y-4">
+          <Skeleton className="h-[550px] w-full" />
+          <Skeleton className="h-[150px] w-full" />
         </div>
+        <Skeleton className="h-16 w-full" />
       </div>
     );
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'alerts':
+        return <Dashboard />;
+      case 'dispatch':
+        return <div className="p-4"><RespondersPanel responders={mockResponders} /></div>;
+      case 'profile':
+        return <ProfilePage />;
+      default:
+        return <Dashboard />;
+    }
+  }
+
   return (
-    <SidebarProvider>
-        <Sidebar className="dark">
-            <SidebarHeader>
-                <div className="flex items-center gap-2 p-2">
-                    <Shield className="text-sidebar-primary size-8" />
-                    <h1 className="text-2xl font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden">DrishtiNow</h1>
-                </div>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton isActive tooltip={{content: "Dashboard"}}>
-                            <Map />
-                            <span>Dashboard</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton tooltip={{content: "Alerts"}}>
-                            <Bell />
-                            <span>Alerts</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton tooltip={{content: "Responders"}}>
-                            <Users />
-                            <span>Responders</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton tooltip={{content: "AI Summary"}}>
-                            <BotMessageSquare />
-                            <span>AI Summary</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarFooter>
-                <SidebarMenu>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton onClick={handleLogout} tooltip={{content: "Logout"}}>
-                            <LogOut />
-                            <span>Logout</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-                <div className="text-xs text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden pt-4">
-                    <p>&copy; {new Date().getFullYear()} DrishtiNow</p>
-                    <p>Proactive Safety Intelligence</p>
-                </div>
-            </SidebarFooter>
-        </Sidebar>
-        <div className="flex-1 flex flex-col h-screen">
-          <header className="p-4 flex justify-between items-center bg-background/80 backdrop-blur-sm sticky top-0 z-10 border-b">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger className="md:hidden" />
-                <h1 className="text-xl font-semibold">Event Command Center</h1>
-              </div>
-          </header>
-          <main className="flex-1 overflow-y-auto p-4 lg:p-4">
-              <Dashboard />
-          </main>
-        </div>
-    </SidebarProvider>
+    <div className="flex flex-col h-screen bg-background">
+      <header className="p-4 flex justify-between items-center bg-background/80 backdrop-blur-sm sticky top-0 z-10 border-b">
+          <div className="flex items-center gap-2">
+            <Shield className="text-primary size-8" />
+            <h1 className="text-xl font-semibold">Management Console</h1>
+          </div>
+      </header>
+      <main className="flex-1 overflow-y-auto pb-20">
+        {renderContent()}
+      </main>
+      <BottomNav items={navItems} activeTab={activeTab} setActiveTab={setActiveTab} />
+    </div>
   );
 }
