@@ -20,8 +20,8 @@ export function AlertsPanel({ alerts, onNewAlert, TakeActionButton }: AlertsPane
 
   return (
     <Card className="shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between py-4">
-        <CardTitle className='text-xl'>Active Alerts</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Active Alerts</CardTitle>
         <ReportForm onNewAlert={onNewAlert}>
             <Button size="sm" variant="outline">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -29,7 +29,7 @@ export function AlertsPanel({ alerts, onNewAlert, TakeActionButton }: AlertsPane
             </Button>
         </ReportForm>
       </CardHeader>
-      <CardContent className='pt-0'>
+      <CardContent>
         <ScrollArea className="h-[calc(100vh-28rem)] pr-3">
           <div className="space-y-3">
             {sortedAlerts.length > 0 ? (

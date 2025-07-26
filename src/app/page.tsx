@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-        <Sidebar>
+        <Sidebar className="dark">
             <SidebarHeader>
                 <div className="flex items-center gap-2 p-2">
                     <Shield className="text-sidebar-primary size-8" />

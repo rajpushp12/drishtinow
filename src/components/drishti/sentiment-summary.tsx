@@ -44,11 +44,11 @@ export function SentimentSummary({ alerts }: { alerts: Alert[] }) {
 
   return (
     <Card className="shadow-md">
-      <CardHeader className='py-4'>
+      <CardHeader>
         <div className="flex justify-between items-center">
             <div className='flex items-center gap-3'>
                 <BotMessageSquare className="h-6 w-6 text-primary" />
-                <CardTitle className="text-lg">AI Sentiment Summary</CardTitle>
+                <CardTitle>AI Sentiment Summary</CardTitle>
             </div>
             <Button variant="ghost" size="icon" onClick={fetchSummary} disabled={isPending}>
                 <RefreshCw className={isPending ? 'animate-spin' : ''} />
@@ -58,7 +58,7 @@ export function SentimentSummary({ alerts }: { alerts: Alert[] }) {
              <CardDescription className='pt-1'>Last updated: {format(lastUpdated, "p")}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className='pt-0'>
+      <CardContent>
         {isPending && !summary ? (
             <div className="space-y-2">
                 <Skeleton className="h-4 w-full" />

@@ -7,10 +7,10 @@ import { Users } from 'lucide-react';
 export function RespondersPanel({ responders }: { responders: Responder[] }) {
   return (
     <Card className="shadow-md">
-      <CardHeader className="py-4">
-        <CardTitle className='text-xl'>Responder Status</CardTitle>
+      <CardHeader>
+        <CardTitle>Responder Status</CardTitle>
       </CardHeader>
-      <CardContent className='pt-0'>
+      <CardContent>
         <ScrollArea className="h-[calc(100vh-28rem)] pr-3">
           <div className="space-y-2">
             {responders.length > 0 ? (
