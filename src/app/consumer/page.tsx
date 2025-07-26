@@ -96,22 +96,22 @@ const ProfilePage = () => {
                 <CardHeader>
                     <CardTitle>My Profile</CardTitle>
                 </CardHeader>
-            </Card>
+             </Card>
              <Card>
                 <CardHeader><CardTitle className="text-lg">Medical Information</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                    <div className="flex items-center gap-3"><Droplets className="text-primary"/><span>Blood Group: <strong>{user.medicalInfo.bloodGroup}</strong></span></div>
-                    <div className="flex items-start gap-3"><CircleAlert className="text-primary mt-1"/><div>Allergies: <strong>{user.medicalInfo.allergies.join(', ') || 'None'}</strong></div></div>
-                    <div className="flex items-start gap-3"><Heart className="text-primary mt-1" /><div>Conditions: <strong>{user.medicalInfo.conditions.join(', ') || 'None'}</strong></div></div>
-                    <div className="flex items-start gap-3"><Pill className="text-primary mt-1" /><div>Medications: <strong>{user.medicalInfo.medications.join(', ') || 'None'}</strong></div></div>
+                    <div className="flex items-center gap-3 text-sm"><Droplets className="text-muted-foreground"/><span>Blood Group: <strong>{user.medicalInfo.bloodGroup}</strong></span></div>
+                    <div className="flex items-start gap-3 text-sm"><CircleAlert className="text-muted-foreground mt-1"/><div>Allergies: <strong>{user.medicalInfo.allergies.join(', ') || 'None'}</strong></div></div>
+                    <div className="flex items-start gap-3 text-sm"><Heart className="text-muted-foreground mt-1" /><div>Conditions: <strong>{user.medicalInfo.conditions.join(', ') || 'None'}</strong></div></div>
+                    <div className="flex items-start gap-3 text-sm"><Pill className="text-muted-foreground mt-1" /><div>Medications: <strong>{user.medicalInfo.medications.join(', ') || 'None'}</strong></div></div>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader><CardTitle  className="text-lg">Contact Information</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                    <div className="flex items-start gap-3"><Phone className="text-primary mt-1"/><div>Emergency Contact: <strong>{user.emergencyContact.name} ({user.emergencyContact.phone})</strong></div></div>
-                    <div className="flex items-start gap-3"><Home className="text-primary mt-1"/><div>Address: <strong>{user.address}</strong></div></div>
+                    <div className="flex items-start gap-3 text-sm"><Phone className="text-muted-foreground mt-1"/><div>Emergency Contact: <strong>{user.emergencyContact.name} ({user.emergencyContact.phone})</strong></div></div>
+                    <div className="flex items-start gap-3 text-sm"><Home className="text-muted-foreground mt-1"/><div>Address: <strong>{user.address}</strong></div></div>
                 </CardContent>
             </Card>
 
