@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LogOut, CheckCircle, Radio, Coffee, MapPin, NotebookPen } from 'lucide-react';
+import { MapView } from '@/components/drishti/map-view';
 
 // In a real app, you'd get the logged-in responder's ID from the session.
 const LOGGED_IN_RESPONDER_ID = 'resp-2'; 
@@ -75,6 +76,9 @@ export default function ResponderDashboard() {
     return <p>Responder not found.</p>
   }
 
+  const alertsForMap = assignedAlert ? [assignedAlert] : [];
+  const respondersForMap = [responder];
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
        <header className="p-4 flex justify-between items-center border-b sticky top-0 bg-background/80 backdrop-blur-sm z-10">
@@ -93,44 +97,57 @@ export default function ResponderDashboard() {
         </Button>
       </header>
 
-      <main className="flex-1 p-4 md:p-6 lg:p-8">
-        <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader>
-                <div className="flex items-center gap-3">
-                    <NotebookPen className="h-6 w-6"/>
-                    <CardTitle>
-                        {assignedAlert ? 'Your Assigned Task' : 'No Assigned Task'}
-                    </CardTitle>
-                </div>
-                <CardDescription>
-                    {assignedAlert ? 'Please proceed to the location and address the situation.' : 'You are currently on standby. Awaiting dispatch.'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {assignedAlert ? (
-                    <AlertCard alert={assignedAlert} />
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-16 rounded-lg bg-muted">
-                        <CheckCircle className="w-16 h-16 mb-4 text-green-500" />
-                        <h3 className="text-2xl font-semibold">All Clear</h3>
-                        <p className="mt-2 text-lg">No tasks are currently assigned to you. Stand by for alerts.</p>
-                  </div>
+      <main className="flex-1 p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="lg:col-span-1">
+            <Card className="w-full h-full">
+                <CardHeader>
+                    <div className="flex items-center gap-3">
+                        <NotebookPen className="h-6 w-6"/>
+                        <CardTitle>
+                            {assignedAlert ? 'Your Assigned Task' : 'No Assigned Task'}
+                        </CardTitle>
+                    </div>
+                    <CardDescription>
+                        {assignedAlert ? 'Please proceed to the location and address the situation.' : 'You are currently on standby. Awaiting dispatch.'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {assignedAlert ? (
+                        <AlertCard alert={assignedAlert} />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-16 rounded-lg bg-muted">
+                            <CheckCircle className="w-16 h-16 mb-4 text-green-500" />
+                            <h3 className="text-2xl font-semibold">All Clear</h3>
+                            <p className="mt-2 text-lg">No tasks are currently assigned to you. Stand by for alerts.</p>
+                      </div>
+                    )}
+                </CardContent>
+                {assignedAlert && (
+                    <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
+                        <Button className="w-full sm:w-auto">
+                            <MapPin className="mr-2"/> Navigate
+                        </Button>
+                        <Button variant="secondary" className="w-full sm:w-auto">
+                            Acknowledge
+                        </Button>
+                         <Button variant="destructive" className="w-full sm:w-auto">
+                            Mark as Resolved
+                        </Button>
+                    </CardFooter>
                 )}
-            </CardContent>
-            {assignedAlert && (
-                <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
-                    <Button className="w-full sm:w-auto">
-                        <MapPin className="mr-2"/> Navigate to Location
-                    </Button>
-                    <Button variant="secondary" className="w-full sm:w-auto">
-                        Acknowledge
-                    </Button>
-                     <Button variant="destructive" className="w-full sm:w-auto">
-                        Mark as Resolved
-                    </Button>
-                </CardFooter>
-            )}
-        </Card>
+            </Card>
+        </div>
+         <div className="lg:col-span-1 h-[400px] lg:h-auto">
+            <Card className="h-full">
+                <CardHeader>
+                    <CardTitle>Task Location</CardTitle>
+                    <CardDescription>Map view of your assigned task and current location.</CardDescription>
+                </CardHeader>
+                 <CardContent className="h-[calc(100%-80px)] p-0">
+                    <MapView alerts={alertsForMap} responders={respondersForMap} />
+                </CardContent>
+            </Card>
+        </div>
       </main>
     </div>
   );

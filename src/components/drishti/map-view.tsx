@@ -1,8 +1,8 @@
 'use client';
 
+import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 import type { Alert, Responder } from '@/lib/types';
-import Image from 'next/image';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Siren, ShieldCheck, HeartPulse, User, Flame, Bot } from 'lucide-react';
 
@@ -16,77 +16,74 @@ const alertIcons: Record<Alert['type'], React.ReactNode> = {
   OTHER: <Siren className="h-5 w-5 text-white" />,
 };
 
-export function MapView({ alerts, responders }: { alerts: Alert[]; responders: Responder[] }) {
-  // A simplified conversion from lat/lng to x/y percentages.
-  // This is a very rough approximation for demonstration purposes.
-  const mapBounds = {
-    minLat: 34.048, maxLat: 34.056,
-    minLng: -118.248, maxLng: -118.241,
-  };
+export function MapView({ alerts, responders, interactive = true }: { alerts: Alert[]; responders: Responder[], interactive?: boolean }) {
+  const [selectedItem, setSelectedItem] = useState<Alert | Responder | null>(null);
 
-  const projectToMap = (lat: number, lng: number) => {
-    const y = 100 - ((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat) * 100);
-    const x = ((lng - mapBounds.minLng) / (mapBounds.maxLng - mapBounds.minLng) * 100);
-    return { x: `${x}%`, y: `${y}%` };
-  };
-  
+  const center = { lat: 34.053, lng: -118.244 };
+  const mapId = 'drishti_map_style';
+
   return (
-    <TooltipProvider>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <div className="relative w-full h-full rounded-b-lg overflow-hidden">
-        <Image src="https://placehold.co/1200x800.png" alt="Event Map" fill objectFit="cover" className="brightness-75" data-ai-hint="aerial event" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <Map
+          defaultCenter={center}
+          defaultZoom={15}
+          mapId={mapId}
+          disableDefaultUI={!interactive}
+          gestureHandling={interactive ? 'auto' : 'none'}
+          className="w-full h-full"
+        >
+          {responders.map(responder => (
+            <AdvancedMarker
+              key={responder.id}
+              position={responder.location}
+              onClick={() => setSelectedItem(responder)}
+            >
+              <div className="p-1.5 bg-primary rounded-full shadow-lg border-2 border-white/80 transition-transform hover:scale-110 cursor-pointer">
+                <ShieldCheck className="w-5 h-5 text-primary-foreground" />
+              </div>
+            </AdvancedMarker>
+          ))}
 
-        {/* Heatmap simulation */}
-        <div className="absolute top-[20%] left-[15%] w-[30%] h-[40%] bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[50%] bg-red-500/25 rounded-full blur-3xl animate-pulse delay-500"></div>
-
-
-        {responders.map(responder => {
-          const { x, y } = projectToMap(responder.location.lat, responder.location.lng);
-          return (
-            <Tooltip key={responder.id} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{ left: x, top: y }}>
-                  <div className="p-1.5 bg-primary rounded-full shadow-lg border-2 border-white/80 transition-transform hover:scale-110">
-                    <ShieldCheck className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="font-bold">{responder.name}</p>
-                <p>Status: {responder.status}</p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-
-        {alerts.map(alert => {
+          {alerts.map(alert => {
             if (alert.status === 'RESOLVED') return null;
-            const { x, y } = projectToMap(alert.location.lat, alert.location.lng);
+
             const severityClass = {
-                CRITICAL: 'bg-destructive ring-destructive/30',
-                WARNING: 'bg-accent ring-accent/30',
-                INFO: 'bg-blue-500 ring-blue-500/30',
+              CRITICAL: 'bg-destructive ring-destructive/30',
+              WARNING: 'bg-accent ring-accent/30',
+              INFO: 'bg-blue-500 ring-blue-500/30',
             }[alert.severity];
 
             return (
-                <Tooltip key={alert.id} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                        <div className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer" style={{ left: x, top: y }}>
-                           <div className={cn("absolute inset-0 rounded-full shadow-xl ring-4 animate-ping opacity-75", severityClass)}></div>
-                           <div className={cn("relative p-2 rounded-full shadow-lg border-2 border-white/80", severityClass)}>
-                                {alertIcons[alert.type]}
-                           </div>
-                        </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p className="font-bold">{alert.title}</p>
-                        <p>{alert.summary}</p>
-                    </TooltipContent>
-                </Tooltip>
+              <AdvancedMarker
+                key={alert.id}
+                position={alert.location}
+                onClick={() => setSelectedItem(alert)}
+              >
+                <div className="relative cursor-pointer">
+                  <div className={cn("absolute inset-0 rounded-full shadow-xl ring-4 animate-ping opacity-75", severityClass)}></div>
+                  <div className={cn("relative p-2 rounded-full shadow-lg border-2 border-white/80", severityClass)}>
+                    {alertIcons[alert.type]}
+                  </div>
+                </div>
+              </AdvancedMarker>
             );
-        })}
+          })}
+
+          {selectedItem && (
+            <InfoWindow
+              position={selectedItem.location}
+              onCloseClick={() => setSelectedItem(null)}
+              pixelOffset={[0,-40]}
+            >
+              <div className="p-1 text-foreground">
+                <h3 className="font-bold">{'title' in selectedItem ? selectedItem.title : selectedItem.name}</h3>
+                {'summary' in selectedItem ? <p className="text-sm">{selectedItem.summary}</p> : <p className="text-sm">Status: {selectedItem.status}</p>}
+              </div>
+            </InfoWindow>
+          )}
+        </Map>
       </div>
-    </TooltipProvider>
+    </APIProvider>
   );
 }
