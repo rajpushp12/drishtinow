@@ -22,12 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={cn("font-body antialiased", roboto.variable)}>
+      <body className={cn("font-body antialiased", roboto.variable)} suppressHydrationWarning>
         {children}
         <Toaster />
       </body>
