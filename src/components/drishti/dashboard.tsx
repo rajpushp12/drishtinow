@@ -120,7 +120,7 @@ export function Dashboard() {
       </div>
       
       <div className="xl:col-span-1 space-y-4">
-        <SentimentSummary />
+        <SentimentSummary alerts={alerts} />
         
         <Tabs defaultValue="alerts" className="w-full">
           <TabsList className="grid w-full grid-cols-2">

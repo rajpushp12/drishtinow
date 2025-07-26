@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview An AI agent that summarizes the overall event sentiment.
+ * @fileOverview An AI agent that summarizes the overall event sentiment based on active alerts.
  *
  * - getEventSentimentSummary - A function that handles the event sentiment summarization process.
  * - GetEventSentimentSummaryInput - The input type for the getEventSentimentSummary function.
@@ -12,20 +12,18 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GetEventSentimentSummaryInputSchema = z.object({
-  eventReports: z.array(
+  alerts: z.array(
     z.object({
-      attendeeId: z.string(),
+      id: z.string(),
+      title: z.string(),
+      summary: z.string(),
       type: z.string(),
-      location: z.object({
-        latitude: z.number(),
-        longitude: z.number(),
-      }),
-      description: z.string().nullable(),
-      photoUrl: z.string().nullable(),
-      timestamp: z.string(),
+      severity: z.string(),
       status: z.string(),
+      timestamp: z.string(),
+      source: z.string(),
     })
-  ).describe('An array of event reports.'),
+  ).describe('An array of active event alerts.'),
 });
 export type GetEventSentimentSummaryInput = z.infer<typeof GetEventSentimentSummaryInputSchema>;
 
@@ -42,13 +40,13 @@ const prompt = ai.definePrompt({
   name: 'eventSentimentSummaryPrompt',
   input: {schema: GetEventSentimentSummaryInputSchema},
   output: {schema: GetEventSentimentSummaryOutputSchema},
-  prompt: `You are an AI assistant that summarizes the sentiment of an event based on attendee reports.
+  prompt: `You are an AI assistant that summarizes the sentiment of an event based on active alerts.
 
-  Given the following event reports, generate a brief summary of the overall event sentiment. Focus on the general mood and any areas that need attention. Do not include data about individual reports, only summarize the entire event's mood and areas of concern.
+  Given the following alerts, generate a brief summary of the overall event sentiment. Focus on the general mood, the types of incidents occurring, and any areas that need attention. Do not list individual alerts, but synthesize the information into a cohesive overview.
 
-  Event Reports:
-  {{#each eventReports}}
-  - Attendee ID: {{attendeeId}}, Type: {{type}}, Description: {{description}}, Status: {{status}}
+  Active Alerts:
+  {{#each alerts}}
+  - Title: {{title}}, Type: {{type}}, Severity: {{severity}}, Status: {{status}}, Summary: {{summary}}
   {{/each}}
   `,
 });

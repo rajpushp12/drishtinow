@@ -3,24 +3,21 @@
 import { getEventSentimentSummary } from "@/ai/flows/event-sentiment-summary";
 import { processReport, ReportProcessorInput } from "@/ai/flows/report-processor";
 import { Report, Alert } from "@/lib/types";
-import { mockReports as initialMockReports } from "@/lib/mock-data";
+import { mockReports as initialMockReports, mockAlerts as initialMockAlerts } from "@/lib/mock-data";
 
 // In a real app, this would come from a database.
 // For this simulation, we'll use an in-memory array.
 let mockReports: Report[] = [...initialMockReports];
+let mockAlerts: Alert[] = [...initialMockAlerts];
 
-export async function getSentimentSummaryAction() {
+export async function getSentimentSummaryAction(currentAlerts: Alert[]) {
     try {
-        const reportsForSummary = mockReports.map(report => ({
-            ...report,
-            location: {
-                latitude: report.location.lat,
-                longitude: report.location.lng,
-            },
-            timestamp: report.timestamp.toISOString(),
+        const alertsForSummary = currentAlerts.map(alert => ({
+            ...alert,
+            timestamp: alert.timestamp.toISOString(),
         }));
 
-        const sentiment = await getEventSentimentSummary({ eventReports: reportsForSummary });
+        const sentiment = await getEventSentimentSummary({ alerts: alertsForSummary });
         return { summary: sentiment.summary, lastUpdated: new Date() };
     } catch (error) {
         console.error("Error getting sentiment summary:", error);
@@ -70,6 +67,8 @@ export async function processReportAction(data: Omit<Report, 'id' | 'timestamp' 
             timestamp: new Date(),
             source: 'Attendee Report',
         };
+        
+        mockAlerts.push(newAlert);
 
         // Find the report and update its status
         const reportIndex = mockReports.findIndex(r => r.id === newReport.id);

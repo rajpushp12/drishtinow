@@ -8,8 +8,9 @@ import { BotMessageSquare, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import type { Alert } from '@/lib/types';
 
-export function SentimentSummary() {
+export function SentimentSummary({ alerts }: { alerts: Alert[] }) {
   const [summary, setSummary] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -20,7 +21,7 @@ export function SentimentSummary() {
     startTransition(async () => {
       setError(null);
       try {
-        const result = await getSentimentSummaryAction();
+        const result = await getSentimentSummaryAction(alerts);
         if (result.error) {
           setError(result.error);
            toast({ variant: "destructive", title: "Error", description: result.error });
@@ -38,7 +39,8 @@ export function SentimentSummary() {
   
   useEffect(() => {
     fetchSummary();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alerts]);
 
   return (
     <Card className="shadow-md">
