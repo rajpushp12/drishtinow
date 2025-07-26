@@ -1,7 +1,7 @@
 // src/app/consumer/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockAlerts, mockResponders } from '@/lib/mock-data';
 import type { Alert, Responder, GeoPoint } from '@/lib/types';
@@ -9,7 +9,7 @@ import { AlertCard } from '@/components/drishti/alert-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, Map, FileQuestion, Plus, CheckCircle, Shield } from 'lucide-react';
+import { Bell, Map, FileQuestion, Plus, CheckCircle, Shield, User, LogOut } from 'lucide-react';
 import { MapView } from '@/components/drishti/map-view';
 import { BottomNav } from '@/components/drishti/bottom-nav';
 import { ReportForm } from '@/components/drishti/report-form';
@@ -20,6 +20,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 const EventFaq = () => (
@@ -68,12 +77,17 @@ export default function ConsumerDashboard() {
   const [responders, setResponders] = useState<Responder[]>([]);
   const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
   const [activeTab, setActiveTab] = useState('alerts');
+  const [userName, setUserName] = useState('');
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
+    const name = localStorage.getItem('userName') || 'User';
+
     if (role !== 'consumer') {
       router.replace('/login');
     } else {
+      setUserName(name);
       const consumerAlerts = mockAlerts.filter(
         (alert) => alert.status !== 'RESOLVED' && (alert.severity === 'CRITICAL' || alert.severity === 'WARNING')
       );
@@ -95,11 +109,23 @@ export default function ConsumerDashboard() {
         );
       }
     }
+    // Correctly initialize Audio only on the client side
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/alert-sound.mp3');
+    }
+
   }, [router]);
   
   const handleNewAlert = (alert: Alert) => {
     setAlerts(prevAlerts => [alert, ...prevAlerts]);
+    audioRef.current?.play().catch(error => console.error("Audio play failed:", error));
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    router.push('/login');
+  };
 
   const navItems = [
     { id: 'alerts', label: 'Alerts', icon: <Bell /> },
@@ -171,6 +197,23 @@ export default function ConsumerDashboard() {
           <Shield className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold">DrishtiNow Safety</h1>
         </div>
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarImage src={`https://placehold.co/40x40.png?text=${userName.charAt(0)}`} data-ai-hint="person portrait" />
+                <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled>Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
       </header>
 
       <main className="flex-1 overflow-y-auto pb-20">

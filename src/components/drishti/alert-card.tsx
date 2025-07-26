@@ -2,7 +2,7 @@ import type { Alert } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Siren, HeartPulse, User, Flame, Clock } from 'lucide-react';
+import { Bot, Siren, HeartPulse, User, Flame, Clock, MapPin } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const alertIcons: Record<Alert['type'], React.ReactNode> = {
@@ -30,7 +30,7 @@ const severityText = {
 export function AlertCard({ alert, children }: { alert: Alert, children?: React.ReactNode }) {
   return (
     <Card className={cn("w-full transition-all hover:shadow-md", severityClasses[alert.severity])}>
-      <CardHeader className="p-3">
+      <CardHeader className="p-3 pb-2">
         <div className="flex justify-between items-start gap-2">
             <div className="flex-grow">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -50,6 +50,12 @@ export function AlertCard({ alert, children }: { alert: Alert, children?: React.
       </CardHeader>
       <CardContent className="px-3 pb-2 pt-0">
         <p className="text-sm text-muted-foreground">{alert.summary}</p>
+        {alert.zone && (
+          <div className="flex items-center text-xs text-muted-foreground mt-2 font-medium">
+            <MapPin className="h-3 w-3 mr-1.5" />
+            Zone: {alert.zone}
+          </div>
+        )}
       </CardContent>
        {(children || alert.source) && (
         <CardFooter className="px-3 pb-3 text-xs text-muted-foreground justify-between pt-0">
