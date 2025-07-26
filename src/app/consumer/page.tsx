@@ -42,7 +42,7 @@ export default function ConsumerDashboard() {
             });
           },
           () => {
-            console.error("Geolocation access denied.");
+            // Silently fail if geolocation is denied.
           }
         );
       }

@@ -38,7 +38,7 @@ export function Dashboard() {
           });
         },
         () => {
-          console.error("Geolocation access denied.");
+          // Silently fail if geolocation is denied.
         }
       );
     }
