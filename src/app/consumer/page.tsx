@@ -1,3 +1,4 @@
+
 // src/app/consumer/page.tsx
 'use client';
 
@@ -71,6 +72,12 @@ const EventFaq = () => (
     </div>
 )
 
+const severityOrder: Record<Alert['severity'], number> = {
+  CRITICAL: 0,
+  WARNING: 1,
+  INFO: 2,
+};
+
 export default function ConsumerDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -92,7 +99,12 @@ export default function ConsumerDashboard() {
       const consumerAlerts = mockAlerts.filter(
         (alert) => alert.status !== 'RESOLVED' && (alert.severity === 'CRITICAL' || alert.severity === 'WARNING')
       );
-      setAlerts(consumerAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+      setAlerts(consumerAlerts.sort((a, b) => {
+        if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+          return severityOrder[a.severity] - severityOrder[b.severity];
+        }
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      }));
       setResponders(mockResponders);
       setLoading(false);
       
@@ -118,7 +130,12 @@ export default function ConsumerDashboard() {
   }, [router]);
   
   const handleNewAlert = (alert: Alert) => {
-    setAlerts(prevAlerts => [alert, ...prevAlerts]);
+    setAlerts(prevAlerts => [alert, ...prevAlerts].sort((a, b) => {
+        if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+          return severityOrder[a.severity] - severityOrder[b.severity];
+        }
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    }));
     audioRef.current?.play().catch(error => console.error("Audio play failed:", error));
   }
 

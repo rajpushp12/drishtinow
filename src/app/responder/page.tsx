@@ -1,3 +1,4 @@
+
 // src/app/responder/page.tsx
 'use client';
 
@@ -14,6 +15,12 @@ import { CheckCircle, Radio, Coffee, MapPin, History, Bell, User } from 'lucide-
 import { BottomNav } from '@/components/drishti/bottom-nav';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProfilePage } from '@/components/drishti/profile-page';
+
+const severityOrder: Record<Alert['severity'], number> = {
+  CRITICAL: 0,
+  WARNING: 1,
+  INFO: 2,
+};
 
 const AlertsPage = ({ assignedAlert }: { assignedAlert: Alert | null }) => (
     <div className="p-4">
@@ -55,7 +62,15 @@ const AlertsPage = ({ assignedAlert }: { assignedAlert: Alert | null }) => (
 )
 
 const AlertHistoryPage = () => {
-    const resolvedAlerts = mockAlerts.filter(a => a.status === 'RESOLVED');
+    const resolvedAlerts = mockAlerts
+        .filter(a => a.status === 'RESOLVED')
+        .sort((a, b) => {
+            if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+                return severityOrder[a.severity] - severityOrder[b.severity];
+            }
+            return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+        });
+
     return (
         <div className="p-4 space-y-4">
              <Card>

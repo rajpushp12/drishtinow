@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Alert } from '@/lib/types';
@@ -15,8 +16,19 @@ type AlertsPanelProps = {
   TakeActionButton?: ComponentType<{ alertId: string }>;
 };
 
+const severityOrder: Record<Alert['severity'], number> = {
+  CRITICAL: 0,
+  WARNING: 1,
+  INFO: 2,
+};
+
 export function AlertsPanel({ alerts, onNewAlert, TakeActionButton }: AlertsPanelProps) {
-  const sortedAlerts = [...alerts].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const sortedAlerts = [...alerts].sort((a, b) => {
+    if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+      return severityOrder[a.severity] - severityOrder[b.severity];
+    }
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+  });
 
   return (
     <Card className="shadow-md">
