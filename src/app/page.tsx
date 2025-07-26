@@ -1,8 +1,55 @@
+// src/app/page.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Dashboard } from '@/components/drishti/dashboard';
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter, SidebarTrigger } from '@/components/ui/sidebar';
-import { Bell, Shield, Map, Users, BotMessageSquare } from 'lucide-react';
+import { Bell, Shield, Map, Users, BotMessageSquare, LogOut } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const role = localStorage.getItem('userRole');
+    if (role !== 'management') {
+      router.replace('/login');
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('userRole');
+    router.push('/login');
+  };
+  
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-background">
+        <Skeleton className="hidden md:block md:w-64" />
+        <div className="flex-1 flex flex-col">
+            <header className="p-4 border-b">
+                <Skeleton className="h-6 w-48" />
+            </header>
+            <main className="flex-1 p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 space-y-6">
+                        <Skeleton className="h-[600px] w-full" />
+                    </div>
+                    <div className="lg:col-span-1 space-y-6">
+                        <Skeleton className="h-[180px] w-full" />
+                        <Skeleton className="h-[550px] w-full" />
+                    </div>
+                </div>
+            </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
         <Sidebar>
@@ -40,8 +87,16 @@ export default function Home() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
-            <SidebarFooter className="group-data-[collapsible=icon]:hidden">
-                <div className="text-xs text-sidebar-foreground/50">
+            <SidebarFooter>
+                <SidebarMenu>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton onClick={handleLogout} tooltip={{content: "Logout"}}>
+                            <LogOut />
+                            <span>Logout</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+                <div className="text-xs text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden pt-4">
                     <p>&copy; {new Date().getFullYear()} DrishtiNow</p>
                     <p>Proactive Safety Intelligence</p>
                 </div>
