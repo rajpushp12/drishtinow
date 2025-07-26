@@ -40,8 +40,8 @@ export function ReportForm({ children, onNewAlert }: { children: React.ReactNode
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Safety Concern",
-      lat: 34.053,
-      lng: -118.244,
+      lat: 19.0219,
+      lng: 73.0169,
       description: "",
     },
   });

@@ -65,7 +65,7 @@ function HeatmapLayer({ data }: { data: HeatmapPoint[] }) {
 export function MapView({ alerts, responders, heatmapData, userLocation, interactive = true }: { alerts: Alert[]; responders: Responder[], heatmapData?: HeatmapPoint[], userLocation?: GeoPoint | null, interactive?: boolean }) {
   const [selectedItem, setSelectedItem] = useState<Alert | Responder | null>(null);
 
-  const center = userLocation || { lat: 34.053, lng: -118.244 };
+  const center = { lat: 19.0219, lng: 73.0169 };
   const mapId = 'drishti_map_style';
 
   return (
@@ -73,7 +73,7 @@ export function MapView({ alerts, responders, heatmapData, userLocation, interac
       <div className="relative w-full h-full rounded-b-lg overflow-hidden">
         <Map
           center={center}
-          zoom={15}
+          zoom={18}
           mapId={mapId}
           disableDefaultUI={!interactive}
           gestureHandling={interactive ? 'auto' : 'none'}

@@ -63,11 +63,12 @@ export const mockUsers: User[] = [
   },
 ];
 
+// Centered around DY Patil Stadium: lat: 19.0219, lng: 73.0169
 export const mockResponders: Responder[] = [
-  { id: 'resp-1', name: 'Alice Johnson', status: 'Available', location: { lat: 34.0522, lng: -118.2437 } },
-  { id: 'resp-2', name: 'Bob Williams', status: 'Dispatched', location: { lat: 34.055, lng: -118.245 }, assignedAlertId: 'alert-2' },
-  { id: 'resp-3', name: 'Charlie Brown', status: 'Available', location: { lat: 34.05, lng: -118.24 } },
-  { id: 'resp-4', name: 'Diana Prince', status: 'On-break', location: { lat: 34.048, lng: -118.25 } },
+  { id: 'resp-1', name: 'Alice Johnson', status: 'Available', location: { lat: 19.0219, lng: 73.0169 } },
+  { id: 'resp-2', name: 'Bob Williams', status: 'Dispatched', location: { lat: 19.0225, lng: 73.0175 }, assignedAlertId: 'alert-2' },
+  { id: 'resp-3', name: 'Charlie Brown', status: 'Available', location: { lat: 19.0210, lng: 73.0160 } },
+  { id: 'resp-4', name: 'Diana Prince', status: 'On-break', location: { lat: 19.0200, lng: 73.0180 } },
 ];
 
 export const mockAlerts: Alert[] = [
@@ -78,7 +79,7 @@ export const mockAlerts: Alert[] = [
     type: 'PREDICTIVE',
     severity: 'WARNING',
     status: 'NEW',
-    location: { lat: 34.054, lng: -118.246 },
+    location: { lat: 19.0222, lng: 73.0173 },
     zone: 'B',
     timestamp: new Date(Date.now() - 5 * 60 * 1000),
     source: 'Vertex AI Forecast',
@@ -90,7 +91,7 @@ export const mockAlerts: Alert[] = [
     type: 'MEDICAL',
     severity: 'CRITICAL',
     status: 'DISPATCHED',
-    location: { lat: 34.055, lng: -118.245 },
+    location: { lat: 19.0225, lng: 73.0175 },
     zone: 'C',
     timestamp: new Date(Date.now() - 10 * 60 * 1000),
     source: 'Attendee Report',
@@ -103,7 +104,7 @@ export const mockAlerts: Alert[] = [
     type: 'LOST_PERSON',
     severity: 'CRITICAL',
     status: 'ACKNOWLEDGED',
-    location: { lat: 34.051, lng: -118.242 },
+    location: { lat: 19.0215, lng: 73.0165 },
     zone: 'A',
     timestamp: new Date(Date.now() - 15 * 60 * 1000),
     source: 'Attendee Report',
@@ -115,7 +116,7 @@ export const mockAlerts: Alert[] = [
     type: 'FIRE',
     severity: 'WARNING',
     status: 'RESOLVED',
-    location: { lat: 34.056, lng: -118.248 },
+    location: { lat: 19.0228, lng: 73.0178 },
     zone: 'C',
     timestamp: new Date(Date.now() - 30 * 60 * 1000),
     source: 'Gemini Vision',
@@ -127,7 +128,7 @@ export const mockAlerts: Alert[] = [
     type: 'PANIC',
     severity: 'INFO',
     status: 'NEW',
-    location: { lat: 34.053, lng: -118.241 },
+    location: { lat: 19.0218, lng: 73.0162 },
     zone: 'B',
     timestamp: new Date(Date.now() - 2 * 60 * 1000),
     source: 'Gemini Vision',
@@ -139,7 +140,7 @@ export const mockReports: Report[] = [
         id: 'report-1',
         attendeeId: 'attendee-123',
         type: 'Medical',
-        location: { lat: 34.055, lng: -118.245 },
+        location: { lat: 19.0225, lng: 73.0175 },
         description: 'Someone fainted near the food court. They seem to be dehydrated.',
         timestamp: new Date(Date.now() - 10 * 60 * 1000),
         status: 'Processed'
@@ -148,7 +149,7 @@ export const mockReports: Report[] = [
         id: 'report-2',
         attendeeId: 'attendee-456',
         type: 'Lost Person',
-        location: { lat: 34.051, lng: -118.242 },
+        location: { lat: 19.0215, lng: 73.0165 },
         description: 'I can\'t find my son. He is 7 years old and is wearing a red t-shirt and blue jeans. His name is Leo.',
         timestamp: new Date(Date.now() - 15 * 60 * 1000),
         status: 'Processed'
@@ -157,7 +158,7 @@ export const mockReports: Report[] = [
         id: 'report-3',
         attendeeId: 'attendee-789',
         type: 'Safety Concern',
-        location: { lat: 34.052, lng: -118.248 },
+        location: { lat: 19.0218, lng: 73.0178 },
         description: 'A group of people are getting very aggressive near the restrooms in Zone B. It might be a good idea to send someone to check it out.',
         timestamp: new Date(Date.now() - 5 * 60 * 1000),
         status: 'Received'
@@ -165,17 +166,17 @@ export const mockReports: Report[] = [
 ];
 
 export const mockHeatmapData: HeatmapPoint[] = [
-  { lat: 34.054, lng: -118.246, weight: 0.8 },
-  { lat: 34.0542, lng: -118.2461, weight: 0.9 },
-  { lat: 34.0538, lng: -118.2459, weight: 0.7 },
-  { lat: 34.055, lng: -118.245, weight: 0.5 },
-  { lat: 34.0551, lng: -118.2452, weight: 0.6 },
-  { lat: 34.051, lng: -118.242, weight: 0.4 },
-  { lat: 34.0512, lng: -118.2422, weight: 0.3 },
-  { lat: 34.053, lng: -118.241, weight: 0.6 },
-  { lat: 34.058, lng: -118.250, weight: 0.2 },
-  { lat: 34.0522, lng: -118.2437, weight: 0.4 },
-  { lat: 34.05, lng: -118.24, weight: 0.3 },
-  { lat: 34.048, lng: -118.25, weight: 0.2 },
-  { lat: 34.056, lng: -118.248, weight: 0.5 },
+  { lat: 19.0222, lng: 73.0173, weight: 0.8 },
+  { lat: 19.0223, lng: 73.0174, weight: 0.9 },
+  { lat: 19.0221, lng: 73.0172, weight: 0.7 },
+  { lat: 19.0225, lng: 73.0175, weight: 0.5 },
+  { lat: 19.0226, lng: 73.0176, weight: 0.6 },
+  { lat: 19.0215, lng: 73.0165, weight: 0.4 },
+  { lat: 19.0216, lng: 73.0166, weight: 0.3 },
+  { lat: 19.0218, lng: 73.0162, weight: 0.6 },
+  { lat: 19.0230, lng: 73.0180, weight: 0.2 },
+  { lat: 19.0219, lng: 73.0169, weight: 0.4 },
+  { lat: 19.0210, lng: 73.0160, weight: 0.3 },
+  { lat: 19.0200, lng: 73.0180, weight: 0.2 },
+  { lat: 19.0228, lng: 73.0178, weight: 0.5 },
 ];
