@@ -73,7 +73,7 @@ const reportProcessorFlow = ai.defineFlow(
   {
     name: 'reportProcessorFlow',
     inputSchema: ReportProcessorInputSchema,
-    outputSchema: ReportProcessorOutputSchema,
+    outputSchema: z.nullable(ReportProcessorOutputSchema),
   },
   async input => {
     const {output} = await reportAnalysisPrompt(input);
