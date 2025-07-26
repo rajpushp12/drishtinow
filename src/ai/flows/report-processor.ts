@@ -15,8 +15,8 @@ const ReportProcessorInputSchema = z.object({
   attendeeId: z.string().describe('The ID of the attendee submitting the report.'),
   type: z.string().describe('The type of report (e.g., Medical, Lost Person, Safety Concern).'),
   location: z.object({
-    lat: z.number().describe('The latitude of the report.'),
-    lng: z.number().describe('The longitude of the report.'),
+    latitude: z.number().describe('The latitude of the report.'),
+    longitude: z.number().describe('The longitude of the report.'),
   }).describe('The location of the report.'),
   description: z.string().nullable().describe('A description of the report.'),
   photoUrl: z.string().nullable().describe('A URL to a photo related to the report, if any.'),
@@ -52,7 +52,7 @@ const reportAnalysisPrompt = ai.definePrompt({
   Here is the report data:
   - Attendee ID: {{{attendeeId}}}
   - Report Type: {{{type}}}
-  - Location (Lat/Lng): {{{location.lat}}}, {{{location.lng}}}
+  - Location (Lat/Lng): {{{location.latitude}}}, {{{location.longitude}}}
   - Description: {{{description}}}
   - Photo URL: {{{photoUrl}}}
   - Timestamp: {{{timestamp}}}
@@ -61,7 +61,7 @@ const reportAnalysisPrompt = ai.definePrompt({
   1.  Whether an alert should be created.
   2.  If so, create a title and summary for the alert.
   3.  Determine the alert type (MEDICAL, LOST_PERSON, SAFETY_CONCERN, or OTHER) and severity (CRITICAL, WARNING, INFO).
-  4. Ensure the location is the same as the report.
+  4. Ensure the location lat/lng for the alert is based on the report's latitude and longitude.
 
   If the report does not warrant an alert, return null. Otherwise, return the alert details.
 
@@ -76,20 +76,19 @@ const reportProcessorFlow = ai.defineFlow(
     outputSchema: z.nullable(ReportProcessorOutputSchema),
   },
   async input => {
-    // Manually create a new input object for the prompt with the location transformed.
-    const promptInput = {
-      ...input,
-      location: {
-        lat: input.location.lat,
-        lng: input.location.lng
-      }
-    };
-    const {output} = await reportAnalysisPrompt(promptInput);
+    const {output} = await reportAnalysisPrompt(input);
 
     if (!output) {
       return null;
     }
 
-    return output;
+    // Manually ensure the output location is correct.
+    return {
+        ...output,
+        alertLocation: {
+            lat: input.location.latitude,
+            lng: input.location.longitude,
+        }
+    };
   }
 );

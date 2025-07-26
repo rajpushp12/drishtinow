@@ -41,7 +41,10 @@ export async function processReportAction(data: Omit<Report, 'id' | 'timestamp' 
     const processorInput: ReportProcessorInput = {
         attendeeId: newReport.attendeeId,
         type: newReport.type,
-        location: newReport.location,
+        location: {
+            latitude: newReport.location.lat,
+            longitude: newReport.location.lng
+        },
         description: newReport.description || null,
         photoUrl: newReport.photoUrl || null,
         timestamp: newReport.timestamp.toISOString(),
