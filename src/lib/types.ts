@@ -42,9 +42,23 @@ export type Responder = {
   assignedAlertId?: string | null;
 };
 
+export type MedicalInfo = {
+    bloodGroup: string;
+    conditions: string[];
+    medications: string[];
+    allergies: string[];
+};
+
 export type User = {
   id: string;
   name: string;
   mobileNumber: string;
   role: 'management' | 'responder' | 'consumer';
+  age: number;
+  medicalInfo: MedicalInfo;
+  emergencyContact: {
+    name: string;
+    phone: string;
+  };
+  address: string;
 };

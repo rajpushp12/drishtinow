@@ -1,10 +1,66 @@
 import type { Alert, Responder, Report, User, HeatmapPoint } from '@/lib/types';
 
 export const mockUsers: User[] = [
-  { id: 'user-1', name: 'Chris Green', mobileNumber: '9876543210', role: 'management' },
-  { id: 'user-2', name: 'Alex Ray', mobileNumber: '7654321098', role: 'consumer' },
-  { id: 'user-3', name: 'Bob Williams', mobileNumber: '8765432109', role: 'responder' },
-  { id: 'user-4', name: 'Alice Johnson', mobileNumber: '6543210987', role: 'responder' },
+  { 
+    id: 'user-1', 
+    name: 'Chris Green', 
+    mobileNumber: '9876543210', 
+    role: 'management',
+    age: 42,
+    medicalInfo: {
+      bloodGroup: 'O+',
+      conditions: [],
+      medications: [],
+      allergies: ['Pollen']
+    },
+    emergencyContact: { name: 'Jane Green', phone: '1234567890' },
+    address: '123 Command Center, Event City'
+  },
+  { 
+    id: 'user-2', 
+    name: 'Alex Ray', 
+    mobileNumber: '7654321098', 
+    role: 'consumer',
+    age: 28,
+    medicalInfo: {
+      bloodGroup: 'A-',
+      conditions: ['Asthma'],
+      medications: ['Inhaler'],
+      allergies: []
+    },
+    emergencyContact: { name: 'Sam Ray', phone: '2345678901' },
+    address: '456 Attendee Ave, Event Suburb'
+  },
+  { 
+    id: 'user-3', 
+    name: 'Bob Williams', 
+    mobileNumber: '8765432109', 
+    role: 'responder',
+    age: 35,
+    medicalInfo: {
+      bloodGroup: 'B+',
+      conditions: [],
+      medications: [],
+      allergies: ['Peanuts']
+    },
+    emergencyContact: { name: 'Sarah Williams', phone: '3456789012' },
+    address: '789 Responder Rd, Medic Town'
+  },
+  { 
+    id: 'user-4', 
+    name: 'Alice Johnson', 
+    mobileNumber: '6543210987', 
+    role: 'responder',
+    age: 32,
+    medicalInfo: {
+      bloodGroup: 'AB+',
+      conditions: [],
+      medications: [],
+      allergies: []
+    },
+    emergencyContact: { name: 'Mark Johnson', phone: '4567890123' },
+    address: '101 Response Unit, Medic Town'
+  },
 ];
 
 export const mockResponders: Responder[] = [
