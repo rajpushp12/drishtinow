@@ -29,6 +29,12 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    /* Google Colors */
+    --google-blue: 217 83% 53%; /* #4285F4 */
+    --google-red: 5 69% 50%; /* #DB4437 */
+    --google-yellow: 45 100% 48%; /* #F4B400 */
+    --google-green: 147 81% 36%; /* #0F9D58 */
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -55,6 +61,12 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+     /* Google Colors */
+    --google-blue: 217 83% 53%; /* #4285F4 */
+    --google-red: 5 69% 50%; /* #DB4437 */
+    --google-yellow: 45 100% 48%; /* #F4B400 */
+    --google-green: 147 81% 36%; /* #0F9D58 */
   }
 }
 

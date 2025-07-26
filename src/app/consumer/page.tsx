@@ -3,13 +3,13 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { mockAlerts, mockResponders, mockUsers } from '@/lib/mock-data';
-import type { Alert, Responder, GeoPoint, User as UserType } from '@/lib/types';
+import { mockAlerts, mockResponders } from '@/lib/mock-data';
+import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { AlertCard } from '@/components/drishti/alert-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, Map, FileQuestion, Plus, CheckCircle, Shield, User, LogOut, Heart, Phone, Home, Droplets, Pill, CircleAlert } from 'lucide-react';
+import { Bell, Map, FileQuestion, Plus, CheckCircle, Shield, User, LogOut } from 'lucide-react';
 import { MapView } from '@/components/drishti/map-view';
 import { BottomNav } from '@/components/drishti/bottom-nav';
 import { ReportForm } from '@/components/drishti/report-form';
@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ProfilePage } from '@/components/drishti/profile-page';
 
 
 const EventFaq = () => (
@@ -69,58 +70,6 @@ const EventFaq = () => (
         </Card>
     </div>
 )
-
-const ProfilePage = () => {
-    const router = useRouter();
-    const [user, setUser] = useState<UserType | null>(null);
-
-    useEffect(() => {
-        const userName = localStorage.getItem('userName');
-        const foundUser = mockUsers.find(u => u.name === userName);
-        setUser(foundUser || null);
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userName');
-        router.push('/login');
-    };
-
-    if (!user) {
-        return <Skeleton className="h-[400px] w-full m-4" />;
-    }
-
-    return (
-        <div className="p-4 space-y-4">
-             <Card>
-                <CardHeader>
-                    <CardTitle>My Profile</CardTitle>
-                </CardHeader>
-             </Card>
-             <Card>
-                <CardHeader><CardTitle className="text-lg">Medical Information</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm"><Droplets className="text-muted-foreground"/><span>Blood Group: <strong>{user.medicalInfo.bloodGroup}</strong></span></div>
-                    <div className="flex items-start gap-3 text-sm"><CircleAlert className="text-muted-foreground mt-1"/><div>Allergies: <strong>{user.medicalInfo.allergies.join(', ') || 'None'}</strong></div></div>
-                    <div className="flex items-start gap-3 text-sm"><Heart className="text-muted-foreground mt-1" /><div>Conditions: <strong>{user.medicalInfo.conditions.join(', ') || 'None'}</strong></div></div>
-                    <div className="flex items-start gap-3 text-sm"><Pill className="text-muted-foreground mt-1" /><div>Medications: <strong>{user.medicalInfo.medications.join(', ') || 'None'}</strong></div></div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader><CardTitle  className="text-lg">Contact Information</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex items-start gap-3 text-sm"><Phone className="text-muted-foreground mt-1"/><div>Emergency Contact: <strong>{user.emergencyContact.name} ({user.emergencyContact.phone})</strong></div></div>
-                    <div className="flex items-start gap-3 text-sm"><Home className="text-muted-foreground mt-1"/><div>Address: <strong>{user.address}</strong></div></div>
-                </CardContent>
-            </Card>
-
-             <Button onClick={handleLogout} className="w-full">
-                <LogOut className="mr-2" /> Logout
-            </Button>
-        </div>
-    );
-};
 
 export default function ConsumerDashboard() {
   const router = useRouter();

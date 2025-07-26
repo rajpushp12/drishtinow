@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['var(--font-roboto)', 'sans-serif'],
+        headline: ['var(--font-roboto)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -64,6 +64,12 @@ export default {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
+        },
+        google: {
+          blue: 'hsl(var(--google-blue))',
+          red: 'hsl(var(--google-red))',
+          yellow: 'hsl(var(--google-yellow))',
+          green: 'hsl(var(--google-green))',
         },
       },
       borderRadius: {
