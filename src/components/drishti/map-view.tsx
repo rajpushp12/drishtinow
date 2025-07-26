@@ -1,10 +1,11 @@
+// src/components/drishti/map-view.tsx
 'use client';
 
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import type { Alert, Responder } from '@/lib/types';
+import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Siren, ShieldCheck, HeartPulse, User, Flame, Bot } from 'lucide-react';
+import { Siren, ShieldCheck, HeartPulse, User, Flame, Bot, MapPin } from 'lucide-react';
 
 const alertIcons: Record<Alert['type'], React.ReactNode> = {
   PREDICTIVE: <Bot className="h-5 w-5 text-white" />,
@@ -16,18 +17,18 @@ const alertIcons: Record<Alert['type'], React.ReactNode> = {
   OTHER: <Siren className="h-5 w-5 text-white" />,
 };
 
-export function MapView({ alerts, responders, interactive = true }: { alerts: Alert[]; responders: Responder[], interactive?: boolean }) {
+export function MapView({ alerts, responders, userLocation, interactive = true }: { alerts: Alert[]; responders: Responder[], userLocation?: GeoPoint | null, interactive?: boolean }) {
   const [selectedItem, setSelectedItem] = useState<Alert | Responder | null>(null);
 
-  const center = { lat: 34.053, lng: -118.244 };
+  const center = userLocation || { lat: 34.053, lng: -118.244 };
   const mapId = 'drishti_map_style';
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <div className="relative w-full h-full rounded-b-lg overflow-hidden">
         <Map
-          defaultCenter={center}
-          defaultZoom={15}
+          center={center}
+          zoom={15}
           mapId={mapId}
           disableDefaultUI={!interactive}
           gestureHandling={interactive ? 'auto' : 'none'}
@@ -69,6 +70,17 @@ export function MapView({ alerts, responders, interactive = true }: { alerts: Al
               </AdvancedMarker>
             );
           })}
+          
+          {userLocation && (
+            <AdvancedMarker position={userLocation}>
+              <div className="relative cursor-pointer" title="Your Location">
+                 <div className="absolute inset-0 rounded-full bg-blue-500 ring-4 ring-blue-500/30 animate-ping opacity-75"></div>
+                 <div className="relative p-1.5 bg-blue-500 rounded-full shadow-lg border-2 border-white/80">
+                    <MapPin className="w-5 h-5 text-white" />
+                 </div>
+              </div>
+            </AdvancedMarker>
+          )}
 
           {selectedItem && (
             <InfoWindow

@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockAlerts, mockResponders } from '@/lib/mock-data';
-import type { Alert, Responder } from '@/lib/types';
+import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { AlertCard } from '@/components/drishti/alert-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ export default function ResponderDashboard() {
   const [loading, setLoading] = useState(true);
   const [responder, setResponder] = useState<Responder | null>(null);
   const [assignedAlert, setAssignedAlert] = useState<Alert | null>(null);
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -35,6 +36,20 @@ export default function ResponderDashboard() {
         setAssignedAlert(alert);
       }
       setLoading(false);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+            setUserLocation({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            });
+            },
+            () => {
+            console.error("Geolocation access denied.");
+            }
+        );
+      }
     }
   }, [router]);
 
@@ -144,7 +159,7 @@ export default function ResponderDashboard() {
                     <CardDescription>Map view of your assigned task and current location.</CardDescription>
                 </CardHeader>
                  <CardContent className="h-[calc(100%-80px)] p-0">
-                    <MapView alerts={alertsForMap} responders={respondersForMap} />
+                    <MapView alerts={alertsForMap} responders={respondersForMap} userLocation={userLocation} />
                 </CardContent>
             </Card>
         </div>

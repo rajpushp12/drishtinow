@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { mockAlerts, mockResponders } from '@/lib/mock-data';
-import type { Alert, Responder } from '@/lib/types';
+import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { MapView } from '@/components/drishti/map-view';
 import { AlertsPanel } from '@/components/drishti/alerts-panel';
 import { RespondersPanel } from '@/components/drishti/responders-panel';
@@ -25,9 +25,23 @@ export function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
   const [responders, setResponders] = useState<Responder[]>(mockResponders);
   const [isClient, setIsClient] = useState(false);
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
 
   useEffect(() => {
     setIsClient(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          console.error("Geolocation access denied.");
+        }
+      );
+    }
   }, []);
 
   const addAlert = (newAlert: Alert) => {
@@ -100,7 +114,7 @@ export function Dashboard() {
             <CardTitle>Live Event Map</CardTitle>
           </CardHeader>
           <CardContent className="h-[calc(100%-60px)] p-0">
-            <MapView alerts={alerts} responders={responders} />
+            <MapView alerts={alerts} responders={responders} userLocation={userLocation} />
           </CardContent>
         </Card>
       </div>

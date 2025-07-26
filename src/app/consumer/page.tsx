@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { mockAlerts, mockResponders } from '@/lib/mock-data';
-import type { Alert, Responder } from '@/lib/types';
+import type { Alert, Responder, GeoPoint } from '@/lib/types';
 import { AlertCard } from '@/components/drishti/alert-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ export default function ConsumerDashboard() {
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [responders, setResponders] = useState<Responder[]>([]);
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -31,6 +32,20 @@ export default function ConsumerDashboard() {
       setAlerts(consumerAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
       setResponders(mockResponders);
       setLoading(false);
+      
+       if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          () => {
+            console.error("Geolocation access denied.");
+          }
+        );
+      }
     }
   }, [router]);
 
@@ -78,7 +93,7 @@ export default function ConsumerDashboard() {
                 <CardDescription>View active alerts and responder locations in real-time.</CardDescription>
               </CardHeader>
               <CardContent className="h-[calc(100%-80px)] p-0">
-                <MapView alerts={alerts} responders={responders} />
+                <MapView alerts={alerts} responders={responders} userLocation={userLocation} />
               </CardContent>
             </Card>
           </TabsContent>
