@@ -11,7 +11,7 @@ export type Alert = {
   severity: "CRITICAL" | "WARNING" | "INFO";
   status: "NEW" | "ACKNOWLEDGED" | "DISPATCHED" | "RESOLVED";
   location: GeoPoint;
-  zone: string;
+  zone?: string;
   timestamp: Date;
   source: "Vertex AI Forecast" | "Gemini Vision" | "Attendee Report";
   assignedResponder?: string | null;
@@ -39,5 +39,6 @@ export type Responder = {
 export type User = {
   id: string;
   name: string;
+  mobileNumber: string;
   role: 'management' | 'responder' | 'consumer';
 };

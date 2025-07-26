@@ -1,10 +1,10 @@
 import type { Alert, Responder, Report, User } from '@/lib/types';
 
 export const mockUsers: User[] = [
-  { id: 'user-1', name: 'Chris Green', role: 'management' },
-  { id: 'user-2', name: 'Alex Ray', role: 'consumer' },
-  { id: 'user-3', name: 'Bob Williams', role: 'responder' },
-  { id: 'user-4', name: 'Alice Johnson', role: 'responder' },
+  { id: 'user-1', name: 'Chris Green', mobileNumber: '9876543210', role: 'management' },
+  { id: 'user-2', name: 'Alex Ray', mobileNumber: '7654321098', role: 'consumer' },
+  { id: 'user-3', name: 'Bob Williams', mobileNumber: '8765432109', role: 'responder' },
+  { id: 'user-4', name: 'Alice Johnson', mobileNumber: '6543210987', role: 'responder' },
 ];
 
 export const mockResponders: Responder[] = [

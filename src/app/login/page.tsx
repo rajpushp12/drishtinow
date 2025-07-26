@@ -10,37 +10,72 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
-import { Shield, LogIn, Loader2 } from 'lucide-react';
+import { Shield, LogIn, Loader2, Phone, KeyRound } from 'lucide-react';
 import { mockUsers } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: 'Please enter your name.' }),
+const MOCK_OTP = "123456";
+
+const mobileFormSchema = z.object({
+  mobileNumber: z.string().length(10, { message: 'Mobile number must be 10 digits.' }),
+});
+
+const otpFormSchema = z.object({
+  otp: z.string().min(6, { message: 'OTP must be 6 digits.' }),
 });
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState<'mobile' | 'otp'>('mobile');
+  const [currentUser, setCurrentUser] = useState<(typeof mockUsers[0]) | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const mobileForm = useForm<z.infer<typeof mobileFormSchema>>({
+    resolver: zodResolver(mobileFormSchema),
     defaultValues: {
-      name: "",
+      mobileNumber: "",
+    },
+  });
+  
+  const otpForm = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      otp: "",
     },
   });
 
-  const handleLogin = (values: z.infer<typeof formSchema>) => {
+  const handleSendOtp = (values: z.infer<typeof mobileFormSchema>) => {
     setIsSubmitting(true);
-    // Simulate network delay
     setTimeout(() => {
-      const user = mockUsers.find(u => u.name.toLowerCase() === values.name.toLowerCase().trim());
+      const user = mockUsers.find(u => u.mobileNumber === values.mobileNumber.trim());
 
       if (user) {
-        localStorage.setItem('userRole', user.role);
-        localStorage.setItem('userName', user.name);
+        setCurrentUser(user);
+        toast({
+          title: "OTP Sent",
+          description: `Your OTP is: ${MOCK_OTP}`,
+        });
+        setStep('otp');
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: "No user found with that mobile number.",
+        });
+      }
+      setIsSubmitting(false);
+    }, 500);
+  };
+
+  const handleVerifyOtp = (values: z.infer<typeof otpFormSchema>) => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      if (values.otp === MOCK_OTP && currentUser) {
+        localStorage.setItem('userRole', currentUser.role);
+        localStorage.setItem('userName', currentUser.name);
         
-        switch (user.role) {
+        switch (currentUser.role) {
           case 'management':
             router.push('/');
             break;
@@ -55,11 +90,11 @@ export default function LoginPage() {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "No user found with that name. Please try one of the demo users.",
+          description: "Invalid OTP. Please try again.",
         });
         setIsSubmitting(false);
       }
-    }, 500); // 0.5 second delay
+    }, 500);
   };
 
   return (
@@ -73,41 +108,80 @@ export default function LoginPage() {
           <CardDescription>Proactive Safety Intelligence. Please log in to continue.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Chris Green" {...field} disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Authenticating...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Log In
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
+          {step === 'mobile' ? (
+            <Form {...mobileForm}>
+              <form onSubmit={mobileForm.handleSubmit(handleSendOtp)} className="space-y-6">
+                <FormField
+                  control={mobileForm.control}
+                  name="mobileNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile Number</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="9876543210" {...field} disabled={isSubmitting} className="pl-10" type="tel"/>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending OTP...
+                    </>
+                  ) : "Send OTP"}
+                </Button>
+              </form>
+            </Form>
+          ) : (
+             <Form {...otpForm}>
+              <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-6">
+                 <p className="text-sm text-center text-muted-foreground">An OTP has been sent to your mobile.</p>
+                <FormField
+                  control={otpForm.control}
+                  name="otp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Enter OTP</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Enter 6-digit OTP" {...field} disabled={isSubmitting} className="pl-10" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Verify & Log In
+                    </>
+                  )}
+                </Button>
+                 <Button variant="link" size="sm" onClick={() => setStep('mobile')} className="w-full">
+                    Back to Mobile Number
+                </Button>
+              </form>
+            </Form>
+          )}
+
            <div className="mt-6 text-center text-xs text-muted-foreground bg-muted p-3 rounded-lg">
-                <p className="font-bold mb-2">Available demo users:</p>
-                <p><span className="font-semibold">Management:</span> Chris Green</p>
-                <p><span className="font-semibold">Responder:</span> Bob Williams</p>
-                <p><span className="font-semibold">Consumer:</span> Alex Ray</p>
+                <p className="font-bold mb-2">Available demo numbers:</p>
+                <p><span className="font-semibold">Management:</span> 9876543210</p>
+                <p><span className="font-semibold">Responder:</span> 8765432109</p>
+                <p><span className="font-semibold">Consumer:</span> 7654321098</p>
           </div>
         </CardContent>
       </Card>
