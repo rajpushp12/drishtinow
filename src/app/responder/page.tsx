@@ -15,6 +15,7 @@ import { CheckCircle, Radio, Coffee, MapPin, History, Bell, User } from 'lucide-
 import { BottomNav } from '@/components/drishti/bottom-nav';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProfilePage } from '@/components/drishti/profile-page';
+import { ThemeToggle } from '@/components/drishti/theme-toggle';
 
 const severityOrder: Record<Alert['severity'], number> = {
   CRITICAL: 0,
@@ -180,6 +181,7 @@ export default function ResponderDashboard() {
                 {getStatusInfo(responder.status)}
             </div>
         </div>
+        <ThemeToggle />
       </header>
       <main className="flex-1 overflow-y-auto pb-20">
         {renderContent()}

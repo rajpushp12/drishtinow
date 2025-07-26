@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { RespondersPanel } from '@/components/drishti/responders-panel';
 import { mockResponders } from '@/lib/mock-data';
 import { ProfilePage } from '@/components/drishti/profile-page';
+import { ThemeToggle } from '@/components/drishti/theme-toggle';
 
 export default function Home() {
   const router = useRouter();
@@ -63,6 +64,7 @@ export default function Home() {
             <Shield className="text-primary size-8" />
             <h1 className="text-xl font-semibold">Management Console</h1>
           </div>
+          <ThemeToggle />
       </header>
       <main className="flex-1 overflow-y-auto pb-20">
         {renderContent()}

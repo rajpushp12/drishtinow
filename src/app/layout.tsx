@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 import { Roboto } from 'next/font/google';
+import { ThemeProvider } from '@/components/drishti/theme-provider';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -22,14 +23,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={cn("font-body antialiased", roboto.variable)} suppressHydrationWarning>
-        {children}
-        <Toaster />
+      <body className={cn("font-body antialiased", roboto.variable)}>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            {children}
+            <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
