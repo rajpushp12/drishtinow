@@ -34,3 +34,9 @@ export type Responder = {
   location: GeoPoint;
   assignedAlertId?: string | null;
 };
+
+export type User = {
+  id: string;
+  name: string;
+  role: 'management' | 'responder' | 'consumer';
+};
