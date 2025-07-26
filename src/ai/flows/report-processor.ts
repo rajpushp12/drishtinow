@@ -76,7 +76,15 @@ const reportProcessorFlow = ai.defineFlow(
     outputSchema: z.nullable(ReportProcessorOutputSchema),
   },
   async input => {
-    const {output} = await reportAnalysisPrompt(input);
+    // Manually create a new input object for the prompt with the location transformed.
+    const promptInput = {
+      ...input,
+      location: {
+        lat: input.location.lat,
+        lng: input.location.lng
+      }
+    };
+    const {output} = await reportAnalysisPrompt(promptInput);
 
     if (!output) {
       return null;
