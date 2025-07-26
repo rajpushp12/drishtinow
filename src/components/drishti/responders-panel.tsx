@@ -6,12 +6,12 @@ import { Users } from 'lucide-react';
 
 export function RespondersPanel({ responders }: { responders: Responder[] }) {
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle>Responder Status</CardTitle>
+    <Card className="shadow-md">
+      <CardHeader className="py-4">
+        <CardTitle className='text-xl'>Responder Status</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[450px] pr-3">
+      <CardContent className='pt-0'>
+        <ScrollArea className="h-[calc(100vh-28rem)] pr-3">
           <div className="space-y-2">
             {responders.length > 0 ? (
                 responders.map(responder => (

@@ -41,8 +41,8 @@ export function SentimentSummary() {
   }, []);
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
+    <Card className="shadow-md">
+      <CardHeader className='py-4'>
         <div className="flex justify-between items-center">
             <div className='flex items-center gap-3'>
                 <BotMessageSquare className="h-6 w-6 text-primary" />
@@ -53,10 +53,10 @@ export function SentimentSummary() {
             </Button>
         </div>
         {lastUpdated && !isPending && (
-             <CardDescription>Last updated: {format(lastUpdated, "p")}</CardDescription>
+             <CardDescription className='pt-1'>Last updated: {format(lastUpdated, "p")}</CardDescription>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className='pt-0'>
         {isPending && !summary ? (
             <div className="space-y-2">
                 <Skeleton className="h-4 w-full" />

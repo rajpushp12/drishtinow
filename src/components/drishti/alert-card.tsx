@@ -27,10 +27,10 @@ const severityText = {
   INFO: 'text-blue-500',
 };
 
-export function AlertCard({ alert }: { alert: Alert }) {
+export function AlertCard({ alert, children }: { alert: Alert, children?: React.ReactNode }) {
   return (
     <Card className={cn("w-full transition-all hover:shadow-md", severityClasses[alert.severity])}>
-      <CardHeader>
+      <CardHeader className="p-3">
         <div className="flex justify-between items-start gap-2">
             <div className="flex-grow">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -41,22 +41,22 @@ export function AlertCard({ alert }: { alert: Alert }) {
                     <Clock className="h-3 w-3" /> {formatDistanceToNow(alert.timestamp, { addSuffix: true })}
                 </CardDescription>
             </div>
-            <Badge variant={alert.status === 'RESOLVED' ? 'secondary' : 'default'} className={cn('capitalize',
+            <Badge variant={alert.status === 'RESOLVED' ? 'secondary' : 'default'} className={cn('capitalize text-xs',
                 {'bg-destructive/80 text-destructive-foreground hover:bg-destructive': alert.severity === 'CRITICAL' && alert.status !== 'RESOLVED'},
                 {'bg-accent/80 text-accent-foreground hover:bg-accent': alert.severity === 'WARNING' && alert.status !== 'RESOLVED'},
                 {'bg-blue-500/80 text-white hover:bg-blue-600': alert.severity === 'INFO' && alert.status !== 'RESOLVED'},
             )}>{alert.status.toLowerCase()}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-4">
+      <CardContent className="px-3 pb-2 pt-0">
         <p className="text-sm text-muted-foreground">{alert.summary}</p>
       </CardContent>
-      <CardFooter className="text-xs text-muted-foreground justify-between pt-0">
-          <span>Source: {alert.source}</span>
-          <span className={cn("font-bold capitalize", severityText[alert.severity])}>
-            {alert.severity.toLowerCase()}
-          </span>
-      </CardFooter>
+       {(children || alert.source) && (
+        <CardFooter className="px-3 pb-3 text-xs text-muted-foreground justify-between pt-0">
+            {alert.source && <span>Source: {alert.source}</span>}
+             {children && <div className='ml-auto'>{children}</div>}
+        </CardFooter>
+      )}
     </Card>
   );
 }

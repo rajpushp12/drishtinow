@@ -34,14 +34,14 @@ export default function Home() {
             <header className="p-4 border-b">
                 <Skeleton className="h-6 w-48" />
             </header>
-            <main className="flex-1 p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-6">
-                        <Skeleton className="h-[600px] w-full" />
-                    </div>
-                    <div className="lg:col-span-1 space-y-6">
-                        <Skeleton className="h-[180px] w-full" />
+            <main className="flex-1 p-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="lg:col-span-2 space-y-4">
                         <Skeleton className="h-[550px] w-full" />
+                    </div>
+                    <div className="lg:col-span-1 space-y-4">
+                        <Skeleton className="h-[150px] w-full" />
+                        <Skeleton className="h-[500px] w-full" />
                     </div>
                 </div>
             </main>
@@ -109,7 +109,7 @@ export default function Home() {
                 <h1 className="text-xl font-semibold">Event Command Center</h1>
               </div>
           </header>
-          <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <main className="flex-1 overflow-y-auto p-4 lg:p-4">
               <Dashboard />
           </main>
         </div>
