@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockAlerts, mockResponders } from '@/lib/mock-data';
-import type { Alert, Responder, GeoPoint } from '@/lib/types';
+import { mockAlerts, mockResponders, mockHeatmapData } from '@/lib/mock-data';
+import type { Alert, Responder, GeoPoint, HeatmapPoint } from '@/lib/types';
 import { MapView } from '@/components/drishti/map-view';
 import { AlertsPanel } from '@/components/drishti/alerts-panel';
 import { SentimentSummary } from '@/components/drishti/sentiment-summary';
@@ -21,8 +21,10 @@ import { useToast } from '@/hooks/use-toast';
 export function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
   const [responders, setResponders] = useState<Responder[]>(mockResponders);
+  const [heatmapData, setHeatmapData] = useState<HeatmapPoint[]>(mockHeatmapData);
   const [isClient, setIsClient] = useState(false);
   const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
@@ -111,7 +113,7 @@ export function Dashboard() {
             <CardTitle>Live Event Map</CardTitle>
           </CardHeader>
           <CardContent className="h-[calc(100%-60px)] p-0">
-            <MapView alerts={alerts} responders={responders} userLocation={userLocation} />
+            <MapView alerts={alerts} responders={responders} heatmapData={heatmapData} userLocation={userLocation} />
           </CardContent>
         </Card>
       </div>

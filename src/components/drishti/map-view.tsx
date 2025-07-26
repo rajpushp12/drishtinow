@@ -1,9 +1,9 @@
 // src/components/drishti/map-view.tsx
 'use client';
 
-import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import type { Alert, Responder, GeoPoint } from '@/lib/types';
-import { useState } from 'react';
+import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow, useMap } from '@vis.gl/react-google-maps';
+import type { Alert, Responder, GeoPoint, HeatmapPoint } from '@/lib/types';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Siren, ShieldCheck, HeartPulse, User, Flame, Bot, MapPin } from 'lucide-react';
 
@@ -17,14 +17,59 @@ const alertIcons: Record<Alert['type'], React.ReactNode> = {
   OTHER: <Siren className="h-5 w-5 text-white" />,
 };
 
-export function MapView({ alerts, responders, userLocation, interactive = true }: { alerts: Alert[]; responders: Responder[], userLocation?: GeoPoint | null, interactive?: boolean }) {
+function HeatmapLayer({ data }: { data: HeatmapPoint[] }) {
+    const map = useMap();
+    const [heatmap, setHeatmap] = useState<google.maps.visualization.HeatmapLayer | null>(null);
+
+    useEffect(() => {
+        if (!map) return;
+
+        const heatmapData = data.map(point => ({
+            location: new google.maps.LatLng(point.lat, point.lng),
+            weight: point.weight
+        }));
+
+        const newHeatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatmapData,
+            map: map,
+        });
+
+        const gradient = [
+          "rgba(102, 255, 0, 0)",
+          "rgba(102, 255, 0, 1)",
+          "rgba(147, 255, 0, 1)",
+          "rgba(193, 255, 0, 1)",
+          "rgba(238, 255, 0, 1)",
+          "rgba(244, 227, 0, 1)",
+          "rgba(249, 198, 0, 1)",
+          "rgba(255, 170, 0, 1)",
+          "rgba(255, 113, 0, 1)",
+          "rgba(255, 57, 0, 1)",
+          "rgba(255, 0, 0, 1)",
+        ];
+
+        newHeatmap.set("gradient", gradient);
+        newHeatmap.set("radius", 20);
+        newHeatmap.set("opacity", 0.6);
+        
+        setHeatmap(newHeatmap);
+        
+        return () => {
+            newHeatmap.setMap(null);
+        };
+    }, [map, data]);
+
+    return null;
+}
+
+export function MapView({ alerts, responders, heatmapData, userLocation, interactive = true }: { alerts: Alert[]; responders: Responder[], heatmapData?: HeatmapPoint[], userLocation?: GeoPoint | null, interactive?: boolean }) {
   const [selectedItem, setSelectedItem] = useState<Alert | Responder | null>(null);
 
   const center = userLocation || { lat: 34.053, lng: -118.244 };
   const mapId = 'drishti_map_style';
 
   return (
-    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!} libraries={['visualization']}>
       <div className="relative w-full h-full rounded-b-lg overflow-hidden">
         <Map
           center={center}
@@ -34,6 +79,8 @@ export function MapView({ alerts, responders, userLocation, interactive = true }
           gestureHandling={interactive ? 'auto' : 'none'}
           className="w-full h-full"
         >
+          {heatmapData && heatmapData.length > 0 && <HeatmapLayer data={heatmapData} />}
+
           {responders.map(responder => (
             <AdvancedMarker
               key={responder.id}

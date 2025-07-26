@@ -1,4 +1,4 @@
-import type { Alert, Responder, Report, User } from '@/lib/types';
+import type { Alert, Responder, Report, User, HeatmapPoint } from '@/lib/types';
 
 export const mockUsers: User[] = [
   { id: 'user-1', name: 'Chris Green', mobileNumber: '9876543210', role: 'management' },
@@ -106,4 +106,20 @@ export const mockReports: Report[] = [
         timestamp: new Date(Date.now() - 5 * 60 * 1000),
         status: 'Received'
     }
+];
+
+export const mockHeatmapData: HeatmapPoint[] = [
+  { lat: 34.054, lng: -118.246, weight: 0.8 },
+  { lat: 34.0542, lng: -118.2461, weight: 0.9 },
+  { lat: 34.0538, lng: -118.2459, weight: 0.7 },
+  { lat: 34.055, lng: -118.245, weight: 0.5 },
+  { lat: 34.0551, lng: -118.2452, weight: 0.6 },
+  { lat: 34.051, lng: -118.242, weight: 0.4 },
+  { lat: 34.0512, lng: -118.2422, weight: 0.3 },
+  { lat: 34.053, lng: -118.241, weight: 0.6 },
+  { lat: 34.058, lng: -118.250, weight: 0.2 },
+  { lat: 34.0522, lng: -118.2437, weight: 0.4 },
+  { lat: 34.05, lng: -118.24, weight: 0.3 },
+  { lat: 34.048, lng: -118.25, weight: 0.2 },
+  { lat: 34.056, lng: -118.248, weight: 0.5 },
 ];

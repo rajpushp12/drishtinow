@@ -3,6 +3,12 @@ export type GeoPoint = {
   lng: number;
 };
 
+export type HeatmapPoint = {
+  lat: number;
+  lng: number;
+  weight: number;
+};
+
 export type Alert = {
   id: string;
   title: string;
