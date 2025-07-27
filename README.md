@@ -2,8 +2,6 @@
 
 DrishtiNow is a comprehensive, real-time event safety and management platform designed to provide proactive intelligence for large-scale gatherings. It leverages modern web technologies and the power of Google's Gemini AI to ensure a safe and secure environment for attendees, responders, and event management staff.
 
-![DrishtiNow Management Console](https://placehold.co/800x400.png)
-
 ## Key Features
 
 - **Role-Based Dashboards**: Tailored interfaces for different user roles (Management, Responder, and Consumer/Attendee).
